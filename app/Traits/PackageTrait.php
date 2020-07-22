@@ -81,15 +81,18 @@ trait PackageTrait
         }
 
         if(is_array(current($tempArrays))){
+            $i=0;
             foreach($tempArrays as $tempArray){ // now iterate through that array
 
                 if($tempArray['transaction_id'] ==$trxId){ // check all conditions
                     $params['transaction_id'] = $trxId;
 
                     // update params into json
-                    array_replace($tempArray, $params);
+                    $tempArrays[$i] = $params;
                     break;
                 }
+
+                $i++;
             }
         }else{
             $tempArrays = array_replace($tempArrays, $params);
