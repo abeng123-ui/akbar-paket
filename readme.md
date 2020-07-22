@@ -1,3 +1,7 @@
+# Specification
+- Lumen Framework 5.5.2 (PHP)
+- Documentation: Postman
+
 # Try run the following command below at Terminal
 
 ## Running Unit Test
