@@ -14,7 +14,7 @@ class PackageController extends Controller
     public function list(Request $request) {
         $package = $this->getAllPackageJsonData();
 
-        if(count($package) < 1 || $package != null){
+        if((count($package) < 1 || $package != null) && !$package){
             $message = 'Data tidak ditemukan';
             $response = GlobalHelper::createResponse(false, $message);
             return $response;
@@ -29,7 +29,7 @@ class PackageController extends Controller
     public function listByTransactionId(Request $request, $transaction_id) {
         $package = $this->findOnePackageJsonDataById($transaction_id);
 
-        if(count($package) < 1 || $package != null){
+        if((count($package) < 1 || $package != null) && !$package){
             $message = 'Data tidak ditemukan';
             $response = GlobalHelper::createResponse(false, $message);
             return $response;
@@ -71,13 +71,7 @@ class PackageController extends Controller
     public function updateAll(Request $request, $transaction_id) {
         $params = $request->all();
 
-        if(!isset($params['transaction_id'])){
-            $message = 'ID transaksi tidak ada';
-            $response = GlobalHelper::createResponse(true, $message);
-            return $response;
-        }
-
-        $package = $this->updateDataIntoPackageJson($params);
+        $package = $this->updateDataIntoPackageJson($params, $transaction_id);
 
         if(count($package) < 1){
             $message = 'Data gagal dirubah';

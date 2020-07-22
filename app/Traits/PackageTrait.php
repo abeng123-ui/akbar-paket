@@ -1,9 +1,6 @@
 <?php
 namespace App\Traits;
 
-use App\Models\Products;
-use App\Models\Masterproducts;
-
 trait PackageTrait
 {
     public static function getAllPackageJsonData() {
@@ -12,6 +9,7 @@ trait PackageTrait
 
         //Decode the JSON data into a PHP array.
         $contentsDecoded = json_decode($contents, true);
+
         return $contentsDecoded;
     }
 
@@ -53,6 +51,10 @@ trait PackageTrait
     }
 
     public static function validateParams($tempArray=[], $trxId) {
+        if(!$tempArray){
+            return true;
+        }
+
         if(is_array(current($tempArray))){
             if(in_array($trxId, $tempArray)){
                 return false;
@@ -67,13 +69,13 @@ trait PackageTrait
 
     }
 
-    public static function updateDataIntoPackageJson($params=[]) {
+    public static function updateDataIntoPackageJson($params=[], $trxId) {
         $data[] = $params;
         $contents = file_get_contents(base_path('app/Models/package.json'));
         $tempArrays = json_decode($contents, true);
 
         // validate
-        $validate = self::checkTransactionExistOrNot($tempArrays, $params['transaction_id']);
+        $validate = self::checkTransactionExistOrNot($tempArrays,$trxId);
         if(!$validate){
             return false;
         }
@@ -81,7 +83,9 @@ trait PackageTrait
         if(is_array(current($tempArrays))){
             foreach($tempArrays as $tempArray){ // now iterate through that array
 
-                if($tempArray['transaction_id'] == $params['transaction_id']){ // check all conditions
+                if($tempArray['transaction_id'] ==$trxId){ // check all conditions
+                    $params['transaction_id'] = $trxId;
+
                     // update params into json
                     array_replace($tempArray, $params);
                     break;
@@ -103,15 +107,17 @@ trait PackageTrait
     }
 
     public static function checkTransactionExistOrNot($tempArrays=[], $trxId) {
+        if(!$tempArrays){
+            return false;
+        }
+
         if(is_array(current($tempArrays))){
             if(in_array($trxId, $tempArrays)){
-                die('1');
                 return false;
             }
         }else{
             if(isset($tempArrays['transaction_id'])){
                 if($tempArrays['transaction_id'] == $trxId){
-                    die('2');
                     return false;
                 }
             }
